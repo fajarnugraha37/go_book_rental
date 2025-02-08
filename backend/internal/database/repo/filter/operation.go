@@ -1,11 +1,14 @@
 package filter
 
-import "strings"
+type OperationType uint
 
-type OperationType string
+const (
+	OR = iota
+	AND
+)
 
 func (operation OperationType) IsOr() bool {
-	return strings.ToLower(string(operation)) == "or"
+	return operation == OR
 }
 
 func (operation OperationType) ToOperation() string {
