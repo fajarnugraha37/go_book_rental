@@ -10,6 +10,7 @@ type UserRepo interface {
 	basev2.RepoDQL[model.User]
 }
 
+// v1
 // type UserRepo interface {
 // 	baseRepo[UserFilter, model.User]
 // }

@@ -12,8 +12,8 @@ type RepoDML[TModel any] interface {
 	Delete(ctx context.Context, id string) (*TModel, error)
 	Restore(ctx context.Context, id string) (*TModel, error)
 
-	// InsertBulk(ctx context.Context, model *[]TResult) error
-	// UpdateBulk(ctx context.Context, model *[]TResult) error
+	InsertBulk(ctx context.Context, model *[]TModel) error
+	UpdateBulk(ctx context.Context, model *[]TModel) error
 
 	// PartialUpdate(ctx context.Context, model *TResult) error
 	// HardDelete(ctx context.Context, model *TResult) error

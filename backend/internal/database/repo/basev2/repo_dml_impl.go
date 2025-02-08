@@ -20,8 +20,29 @@ func (r *RepoDMLImpl[TModel]) Insert(ctx context.Context, model *TModel) error {
 	return err
 }
 
+// InsertBulk implements RepoDML.
+func (r *RepoDMLImpl[TModel]) InsertBulk(ctx context.Context, model *[]TModel) error {
+	_, err := r.db.NewInsert().
+		Model(model).
+		Returning("*").
+		Exec(ctx)
+
+	return err
+}
+
 // Update implements RepoDML.
 func (r *RepoDMLImpl[TModel]) Update(ctx context.Context, model *TModel) error {
+	_, err := r.db.NewUpdate().
+		Model(model).
+		WherePK().
+		Returning("*").
+		Exec(ctx)
+
+	return err
+}
+
+// UpdateBulk implements RepoDML.
+func (r *RepoDMLImpl[TModel]) UpdateBulk(ctx context.Context, model *[]TModel) error {
 	_, err := r.db.NewUpdate().
 		Model(model).
 		WherePK().
