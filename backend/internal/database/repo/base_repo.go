@@ -10,7 +10,9 @@ type baseRepo[TFilter, TResult any] interface {
 	FindOne(ctx context.Context, filter TFilter, sortable *Sortable) (*TResult, error)
 	FindAll(ctx context.Context, filter TFilter, pageable *Pageable, sortable *Sortable) (*[]TResult, error)
 	Insert(ctx context.Context, model *TResult) error
+	InsertBulk(ctx context.Context, model *[]TResult) error
 	Update(ctx context.Context, model *TResult) error
+	UpdateBulk(ctx context.Context, model *[]TResult) error
 	Delete(ctx context.Context, id string) (*TResult, error)
 	Restore(ctx context.Context, id string) (*TResult, error)
 
@@ -79,8 +81,29 @@ func (b *baseRepoImpl[TFilter, TResult]) Insert(ctx context.Context, model *TRes
 	return err
 }
 
+// Insert implements InsertBulk.
+func (b *baseRepoImpl[TFilter, TResult]) InsertBulk(ctx context.Context, model *[]TResult) error {
+	_, err := b.db.NewInsert().
+		Model(model).
+		Returning("*").
+		Exec(ctx)
+
+	return err
+}
+
 // Update implements Update.
 func (b *baseRepoImpl[TFilter, TResult]) Update(ctx context.Context, model *TResult) error {
+	_, err := b.db.NewUpdate().
+		Model(model).
+		WherePK().
+		Returning("*").
+		Exec(ctx)
+
+	return err
+}
+
+// Update implements UpdateBulk.
+func (b *baseRepoImpl[TFilter, TResult]) UpdateBulk(ctx context.Context, model *[]TResult) error {
 	_, err := b.db.NewUpdate().
 		Model(model).
 		WherePK().
