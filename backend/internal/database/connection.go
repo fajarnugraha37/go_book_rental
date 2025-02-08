@@ -9,12 +9,13 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
+	"github.com/uptrace/bun/extra/bundebug"
 )
 
 var sqldb *sql.DB
 var bundb *bun.DB
 
-func connect(cfg config.Config) {
+func connect(cfg *config.Config) {
 	sqldb = sql.OpenDB(pgdriver.NewConnector(
 		pgdriver.WithNetwork("tcp"),
 		pgdriver.WithAddr(fmt.Sprintf("%s:%d", cfg.Database.Host, cfg.Database.Port)),
@@ -32,13 +33,17 @@ func connect(cfg config.Config) {
 		panic(err)
 	}
 
-	bundb = bun.NewDB(sqldb, pgdialect.New())
+	bundb = bun.NewDB(
+		sqldb,
+		pgdialect.New(),
+	)
+	bundb.AddQueryHook(bundebug.NewQueryHook())
 	if err := bundb.Ping(); err != nil {
 		panic(err)
 	}
 }
 
-func GetSqlDB(cfg config.Config) *sql.DB {
+func GetSqlDB(cfg *config.Config) *sql.DB {
 	if sqldb == nil || sqldb.Ping() != nil {
 		connect(cfg)
 	}
@@ -46,7 +51,7 @@ func GetSqlDB(cfg config.Config) *sql.DB {
 	return sqldb
 }
 
-func GetBunDB(cfg config.Config) *bun.DB {
+func GetBunDB(cfg *config.Config) *bun.DB {
 	if bundb == nil || bundb.Ping() != nil {
 		connect(cfg)
 	}
