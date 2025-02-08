@@ -5,10 +5,11 @@ app:
 
 database:
   host: localhost
-  port: 5672
+  port: 5432
   user: postgres
   password: postgres
   name: rental
+  ssl_mode: disable
 
 cache:
   type: redis
