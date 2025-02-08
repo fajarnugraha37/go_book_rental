@@ -27,12 +27,15 @@ func connect(cfg config.Config) {
 		pgdriver.WithDialTimeout(5*time.Second),
 		pgdriver.WithReadTimeout(60*time.Second),
 		pgdriver.WithWriteTimeout(60*time.Second),
-		pgdriver.WithConnParams(map[string]interface{}{
-			"sslmode": cfg.Database.SslMode,
-		}),
 	))
+	if err := sqldb.Ping(); err != nil {
+		panic(err)
+	}
 
 	bundb = bun.NewDB(sqldb, pgdialect.New())
+	if err := bundb.Ping(); err != nil {
+		panic(err)
+	}
 }
 
 func GetSqlDB(cfg config.Config) *sql.DB {
