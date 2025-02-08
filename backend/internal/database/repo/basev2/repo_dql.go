@@ -9,7 +9,8 @@ import (
 
 type RepoDQL[TModel any] interface {
 	FindOne(ctx context.Context, predicate *filter.Predicate) (*TModel, error)
-	FindMany(ctx context.Context, predicate *filter.Predicate) (*[]TModel, error)
+	FindMany(ctx context.Context, predicate *filter.Predicate) ([]TModel, error)
+	FindPageable(ctx context.Context, predicate *filter.Predicate) (filter.Page[TModel], error)
 	Count(ctx context.Context, predicate *filter.Predicate) (int, error)
 }
 

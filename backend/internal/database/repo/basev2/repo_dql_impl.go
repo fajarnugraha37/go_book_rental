@@ -27,10 +27,10 @@ func (r *RepoDQLImpl[TModel]) FindOne(ctx context.Context, predicate *filter.Pre
 }
 
 // FindMany implements RepoDQL.
-func (r *RepoDQLImpl[TModel]) FindMany(ctx context.Context, predicate *filter.Predicate) (*[]TModel, error) {
-	result := new([]TModel)
+func (r *RepoDQLImpl[TModel]) FindMany(ctx context.Context, predicate *filter.Predicate) ([]TModel, error) {
+	var result []TModel
 	query := r.db.NewSelect().
-		Model(result)
+		Model(&result)
 
 	if predicate.Pageable != nil {
 		query = predicate.Pageable.Append(query)
@@ -43,10 +43,24 @@ func (r *RepoDQLImpl[TModel]) FindMany(ctx context.Context, predicate *filter.Pr
 		Apply(predicate.ToQuery()...).
 		Scan(ctx)
 	if err != nil {
-		return nil, err
+		return result, err
 	}
 
 	return result, nil
+}
+
+// FindMany implements RepoDQL.
+func (r *RepoDQLImpl[TModel]) FindPageable(ctx context.Context, predicate *filter.Predicate) (filter.Page[TModel], error) {
+	items, err := r.FindMany(ctx, predicate)
+	if err != nil {
+		return filter.Page[TModel]{}, err
+	}
+	count, err := r.Count(ctx, predicate)
+	if err != nil {
+		return filter.Page[TModel]{}, err
+	}
+
+	return filter.NewPage(items, uint(count), predicate.Pageable.Page, predicate.Pageable.PageSize), nil
 }
 
 // Count implements RepoDQL.
