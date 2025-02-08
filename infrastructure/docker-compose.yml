@@ -101,3 +101,7 @@ services:
 volumes:
   database_data:
   minio_data:
+
+networks:
+  default:
+    name: app-network
