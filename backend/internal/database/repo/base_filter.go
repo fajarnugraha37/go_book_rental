@@ -3,17 +3,23 @@ package repo
 import (
 	"backend/pkg/helper"
 	"reflect"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
 const (
-	tagKeyComparator = "comparator"
-	tagKeyField      = "field"
+	tagKeyComparator  = "comparator"
+	tagKeyField       = "field"
+	tagKeyFieldsSeach = "search_field"
 )
 
-type AuditFilter struct {
+type QuickSearch struct {
+	Fields []string
+}
+
+type CommonFilter struct {
 	UUID  *uuid.UUID   `comparator:"eq" field:"id"`
 	ID    *string      `comparator:"eq" field:"id"`
 	IDs   *[]string    `comparator:"in" field:"id"`
@@ -58,6 +64,19 @@ func filterToQueryBuilder[TFilter any](filter TFilter) func(q *bun.SelectQuery) 
 			}
 
 			switch tagValue {
+			case "quick_search":
+				{
+					tagSearchField, ok := field.Tag.Lookup(tagKeyFieldsSeach)
+					if ok {
+						q.WhereGroup(" AND ", func(qg *bun.SelectQuery) *bun.SelectQuery {
+							for _, col := range strings.Split(tagSearchField, ",") {
+								qg.WhereOr(col+" LIKE ? ", (field.Value.(string) + "%"))
+							}
+
+							return qg
+						})
+					}
+				}
 			case "relations":
 				{
 					for _, v := range field.Value.([]string) {
