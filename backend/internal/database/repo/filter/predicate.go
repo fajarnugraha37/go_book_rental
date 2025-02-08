@@ -14,12 +14,27 @@ type Predicate struct {
 		Name string
 		Opt  bun.RelationOpts
 	}
+	Joins []Join
 }
 
 func (predicate Predicate) ToQuery() [](func(*bun.SelectQuery) *bun.SelectQuery) {
 	return [](func(*bun.SelectQuery) *bun.SelectQuery){
 		predicate.toRelations(),
+		predicate.toJoins(),
 		predicate.toFilters(),
+	}
+}
+
+func (predicate Predicate) toJoins() func(*bun.SelectQuery) *bun.SelectQuery {
+	return func(mainQuery *bun.SelectQuery) *bun.SelectQuery {
+		for _, join := range predicate.Joins {
+			mainQuery.Join(join.Clause)
+			for _, on := range join.Ons {
+				mainQuery.JoinOn(on)
+			}
+		}
+
+		return mainQuery
 	}
 }
 
@@ -34,6 +49,7 @@ func (predicate Predicate) toRelations() func(*bun.SelectQuery) *bun.SelectQuery
 		return mainQuery
 	}
 }
+
 func (predicate Predicate) toFilters() func(*bun.SelectQuery) *bun.SelectQuery {
 	return func(mainQuery *bun.SelectQuery) *bun.SelectQuery {
 		for _, filter := range predicate.Filters {

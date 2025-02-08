@@ -12,7 +12,7 @@ var _ bun.BeforeInsertHook = (*User)(nil)
 var _ bun.BeforeUpdateHook = (*User)(nil)
 
 type User struct {
-	bun.BaseModel `bun:"table:users,alias:u"`
+	bun.BaseModel `bun:"table:users,alias:users"`
 
 	ID uuid.UUID `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
 	// Provider           string     `bun:"provider,default:'password'"`
