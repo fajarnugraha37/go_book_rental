@@ -1,10 +1,11 @@
 package config
 
 type Config struct {
-	AppConfig           `mapstructure:"app"`
-	DatabaseConfig      `mapstructure:"database"`
-	ObjectStorageConfig `mapstructure:"object_storage"`
-	MessageBrokerConfig `mapstructure:"message_broker"`
+	App           AppConfig           `mapstructure:"app"`
+	Database      DatabaseConfig      `mapstructure:"database"`
+	Cache         CacheConfig         `mapstructure:"cache"`
+	ObjectStorage ObjectStorageConfig `mapstructure:"object_storage"`
+	MessageBroker MessageBrokerConfig `mapstructure:"message_broker"`
 }
 
 type AppConfig struct {
@@ -32,6 +33,14 @@ type ObjectStorageConfig struct {
 type MessageBrokerConfig struct {
 	Type     string
 	Brokers  []string
+	Username string
+	Password string
+}
+
+type CacheConfig struct {
+	Type     string
+	Host     string
+	Port     int
 	Username string
 	Password string
 }

@@ -10,6 +10,14 @@ database:
   password: postgres
   name: rental
 
+cache:
+  type: redis
+  host: redis
+  port: 6379
+  username:
+  password:
+  ssl: false
+
 object_storage:
   type: minio
   access_key: minioadmin
