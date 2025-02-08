@@ -70,7 +70,21 @@ func GetAllFields(t reflect.Type, v reflect.Value, prefix ...string) []FieldInfo
 			if (fieldValue.Kind() == reflect.Ptr && fieldValue.IsNil()) || (fieldValue.Kind() == reflect.Interface && fieldValue.IsNil()) {
 				value = nil
 			} else {
-				value = fieldValue.Interface()
+				temp := fieldValue.Interface()
+				if fieldValue.Kind() == reflect.Ptr {
+					actualValue := fieldValue.Elem()
+					if actualValue.Kind() == reflect.Ptr {
+						if actualValue.IsNil() {
+							continue
+						} else {
+							value = actualValue.Elem().Interface()
+						}
+					} else {
+						value = actualValue.Interface()
+					}
+				} else {
+					value = temp
+				}
 			}
 
 			fields = append(fields, FieldInfo{
