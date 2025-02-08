@@ -56,41 +56,47 @@ func CompartorEnum(value string) ComparatorType {
 func (comparator ComparatorType) toExpression(field string, value, secondValue any) (string, []any) {
 	var (
 		expression string
-		arguments  []any = []any{value}
+		arguments  []any = []any{bun.Ident(field)}
 	)
 	switch comparator {
 	case EQ:
-		expression = " = ? "
+		expression = " ? = ? "
+		arguments = append(arguments, value)
 	case NEQ:
-		expression = " != ? "
+		expression = " ? != ? "
+		arguments = append(arguments, value)
 	case LT:
-		expression = " < ? "
+		expression = " ? < ? "
 	case LTE:
-		expression = " <= ? "
+		expression = " ? <= ? "
+		arguments = append(arguments, value)
 	case GT:
-		expression = " > ? "
+		expression = " ? > ? "
+		arguments = append(arguments, value)
 	case GTE:
-		expression = " >= ? "
+		expression = " ? >= ? "
+		arguments = append(arguments, value)
 	case LIKE:
-		expression = " LIKE ? "
+		expression = " ? LIKE ? "
+		arguments = append(arguments, value)
 	case NLIKE:
-		expression = " NOT LIKE ? "
+		expression = " ? NOT LIKE ? "
+		arguments = append(arguments, value)
 	case IN:
-		expression = " IN (?) "
-		arguments = []any{bun.In(value)}
+		expression = " ? IN (?) "
+		arguments = append(arguments, bun.In(value))
 	case NIN:
-		expression = " NOT IN (?) "
-		arguments = []any{bun.In(value)}
+		expression = " ? NOT IN (?) "
+		arguments = append(arguments, bun.In(value))
 	case BETWEEN:
-		expression = " BETWEEN ? AND ? "
-		arguments = []any{value, secondValue}
+		expression = " ? BETWEEN ? AND ? "
+		arguments = append(arguments, value, secondValue)
 	case NBETWEEN:
-		expression = " NOT BETWEEN ? AND ? "
-		arguments = []any{value, secondValue}
+		expression = " ? NOT BETWEEN ? AND ? "
+		arguments = append(arguments, value, secondValue)
 	default:
 		panic(fmt.Errorf("unsupported comparator %+v", comparator))
 	}
-	expression = field + expression
 
 	return expression, arguments
 }
