@@ -53,7 +53,7 @@ func (predicate Predicate) toRelations() func(*bun.SelectQuery) *bun.SelectQuery
 func (predicate Predicate) toFilters() func(*bun.SelectQuery) *bun.SelectQuery {
 	return func(mainQuery *bun.SelectQuery) *bun.SelectQuery {
 		for _, filter := range predicate.Filters {
-			expression, arguments := filter.Comparator.ToExpression(filter.Field, filter.Param)
+			expression, arguments := filter.Comparator.toExpression(filter.Field, filter.Param, filter.SecondParam)
 			if predicate.Operation.IsOr() {
 				mainQuery.WhereOr(expression, arguments...)
 			} else {

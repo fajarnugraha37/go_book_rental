@@ -20,6 +20,8 @@ const (
 	NLIKE
 	IN
 	NIN
+	BETWEEN
+	NBETWEEN
 )
 
 var comparatorString = []string{
@@ -33,6 +35,8 @@ var comparatorString = []string{
 	"NLIKE",
 	"IN",
 	"NIN",
+	"BETWEEN",
+	"NBETWEEN",
 }
 
 func (comparator ComparatorType) String() string {
@@ -49,7 +53,7 @@ func CompartorEnum(value string) ComparatorType {
 	panic(fmt.Errorf("invalid query comparator: %+v", value))
 }
 
-func (comparator ComparatorType) ToExpression(field string, value any) (string, []any) {
+func (comparator ComparatorType) toExpression(field string, value, secondValue any) (string, []any) {
 	var (
 		expression string
 		arguments  []any = []any{value}
@@ -77,6 +81,12 @@ func (comparator ComparatorType) ToExpression(field string, value any) (string, 
 	case NIN:
 		expression = " NOT IN (?) "
 		arguments = []any{bun.In(value)}
+	case BETWEEN:
+		expression = " BETWEEN ? AND ? "
+		arguments = []any{value, secondValue}
+	case NBETWEEN:
+		expression = " NOT BETWEEN ? AND ? "
+		arguments = []any{value, secondValue}
 	default:
 		panic(fmt.Errorf("unsupported comparator %+v", comparator))
 	}
