@@ -2,14 +2,15 @@ package model
 
 import (
 	"backend/internal/database/model/base"
+	"backend/pkg/helper"
+	"context"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
-var _ bun.BeforeInsertHook = (*User)(nil)
-var _ bun.BeforeUpdateHook = (*User)(nil)
+var _ bun.BeforeAppendModelHook = (*User)(nil)
 
 type User struct {
 	bun.BaseModel `bun:"table:users,alias:users"`
@@ -31,4 +32,20 @@ type User struct {
 	base.AuditColumn
 
 	UserAttributes []*UserAttribute `bun:"rel:has-many,join:id=user_id"`
+}
+
+func (m *User) BeforeAppendModel(ctx context.Context, query bun.Query) error {
+	switch query.(type) {
+	case *bun.InsertQuery:
+		m.CreatedAt = helper.ToPtr(time.Now())
+		if m.CreatedBy == nil {
+			m.CreatedBy = helper.ToPtr("system@intranet")
+		}
+	case *bun.UpdateQuery:
+		m.UpdatedAt = helper.ToPtr(time.Now())
+		if m.UpdatedBy == nil {
+			m.UpdatedBy = helper.ToPtr("system@intranet")
+		}
+	}
+	return nil
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
-	"github.com/uptrace/bun/extra/bundebug"
 )
 
 var sqldb *sql.DB
@@ -37,7 +36,7 @@ func connect(cfg *config.Config) {
 		sqldb,
 		pgdialect.New(),
 	)
-	bundb.AddQueryHook(bundebug.NewQueryHook())
+	bundb.AddQueryHook(&QueryHook{})
 	if err := bundb.Ping(); err != nil {
 		panic(err)
 	}
