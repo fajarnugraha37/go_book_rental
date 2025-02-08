@@ -62,7 +62,7 @@ func (predicate Predicate) toFilters() func(*bun.SelectQuery) *bun.SelectQuery {
 
 			if filter.Predicate != nil {
 				mainQuery.WhereGroup(
-					predicate.Operation.ToOperation(),
+					predicate.Operation.String(),
 					func(predicateQuery *bun.SelectQuery) *bun.SelectQuery {
 
 						return filter.Predicate.toFilters()(predicateQuery)

@@ -2,9 +2,12 @@ package filter
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/uptrace/bun"
 )
+
+type ComparatorType uint
 
 const (
 	EQ = iota
@@ -19,7 +22,32 @@ const (
 	NIN
 )
 
-type ComparatorType uint
+var comparatorString = []string{
+	"EQ",
+	"NEQ",
+	"LT",
+	"LTE",
+	"GT",
+	"GTE",
+	"LIKE",
+	"NLIKE",
+	"IN",
+	"NIN",
+}
+
+func (comparator ComparatorType) String() string {
+	return comparatorString[comparator]
+}
+
+func CompartorEnum(value string) ComparatorType {
+	for i, v := range comparatorString {
+		if strings.EqualFold(v, value) {
+			return ComparatorType(i)
+		}
+	}
+
+	panic(fmt.Errorf("invalid query comparator: %+v", value))
+}
 
 func (comparator ComparatorType) ToExpression(field string, value any) (string, []any) {
 	var (
