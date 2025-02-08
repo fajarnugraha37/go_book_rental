@@ -14,8 +14,8 @@ var _ bun.BeforeUpdateHook = (*User)(nil)
 type User struct {
 	bun.BaseModel `bun:"table:users,alias:u"`
 
-	ID                 uuid.UUID  `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	Provider           string     `bun:"provider,default:'password'"`
+	ID uuid.UUID `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
+	// Provider           string     `bun:"provider,default:'password'"`
 	Username           string     `bun:"username,unique,notnull"`
 	Password           *string    `bun:"password,type:text"`
 	IsActive           bool       `bun:"is_active"`
