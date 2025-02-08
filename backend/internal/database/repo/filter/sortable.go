@@ -36,7 +36,7 @@ func SortablesAppend(s []Sortable, q *bun.SelectQuery) *bun.SelectQuery {
 	for i := 0; i < len(s); i++ {
 		sortable := s[i]
 		expressions = append(expressions, "? ?")
-		args = append(args, bun.Safe(sortable.SortBy), bun.Safe(sortable.ToDirection()))
+		args = append(args, bun.Ident(sortable.SortBy), bun.Safe(sortable.ToDirection()))
 	}
 	q.OrderExpr(strings.Join(expressions, ", ")+" NULLS LAST", args...)
 
