@@ -5,13 +5,36 @@ import (
 )
 
 type Predicate struct {
-	Operation OperationType
-	Filters   []QueryFilter
-	Pageable  *Pageable
-	Sortable  *[]Sortable
+	Operation        OperationType
+	Filters          []QueryFilter
+	Pageable         *Pageable
+	Sortable         *[]Sortable
+	Relations        []string
+	RelationsWithOpt []struct {
+		Name string
+		Opt  bun.RelationOpts
+	}
 }
 
-func (predicate Predicate) ToQuery() func(*bun.SelectQuery) *bun.SelectQuery {
+func (predicate Predicate) ToQuery() [](func(*bun.SelectQuery) *bun.SelectQuery) {
+	return [](func(*bun.SelectQuery) *bun.SelectQuery){
+		predicate.toRelations(),
+		predicate.toFilters(),
+	}
+}
+
+func (predicate Predicate) toRelations() func(*bun.SelectQuery) *bun.SelectQuery {
+	return func(mainQuery *bun.SelectQuery) *bun.SelectQuery {
+		for _, relation := range predicate.Relations {
+			mainQuery.Relation(relation)
+		}
+		for _, relation := range predicate.RelationsWithOpt {
+			mainQuery.RelationWithOpts(relation.Name, relation.Opt)
+		}
+		return mainQuery
+	}
+}
+func (predicate Predicate) toFilters() func(*bun.SelectQuery) *bun.SelectQuery {
 	return func(mainQuery *bun.SelectQuery) *bun.SelectQuery {
 		for _, filter := range predicate.Filters {
 			expression, arguments := filter.Comparator.ToExpression(filter.Field, filter.Value)
@@ -26,7 +49,7 @@ func (predicate Predicate) ToQuery() func(*bun.SelectQuery) *bun.SelectQuery {
 					predicate.Operation.ToOperation(),
 					func(predicateQuery *bun.SelectQuery) *bun.SelectQuery {
 
-						return filter.Predicate.ToQuery()(predicateQuery)
+						return filter.Predicate.toFilters()(predicateQuery)
 					},
 				)
 			}
