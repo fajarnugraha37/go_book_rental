@@ -5,6 +5,7 @@ go 1.23.4
 require github.com/gofiber/fiber/v2 v2.52.6
 
 require (
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -43,6 +44,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
+	github.com/pquerna/otp v1.4.0
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/spf13/viper v1.19.0
 	github.com/uptrace/bun v1.2.9
