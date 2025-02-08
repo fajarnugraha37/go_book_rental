@@ -14,19 +14,19 @@ var _ bun.BeforeUpdateHook = (*User)(nil)
 type User struct {
 	bun.BaseModel `bun:"table:users,alias:users"`
 
-	ID uuid.UUID `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	// Provider           string     `bun:"provider,default:'password'"`
+	ID                 uuid.UUID  `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
+	Provider           string     `bun:"provider,default:'password'"`
 	Username           string     `bun:"username,unique,notnull"`
 	Password           *string    `bun:"password,type:text"`
 	IsActive           bool       `bun:"is_active"`
-	ActiveAt           *time.Time `bun:"active_at"`
+	ActiveAt           *time.Time `bun:"active_at,type:timestamptz"`
 	ActiveBy           *string    `bun:"active_by"`
 	ConfirmationToken  *string    `bun:"confirmation_token,unique"`
-	ConfirmationExpiry *time.Time `bun:"confirmation_expiry"`
+	ConfirmationExpiry *time.Time `bun:"confirmation_expiry,type:timestamptz"`
 	OTPSecret          *string    `bun:"otp_secret"`
-	OTPExpiry          *time.Time `bun:"otp_expiry"`
+	OTPExpiry          *time.Time `bun:"otp_expiry,type:timestamptz"`
 	MagicLinkToken     *string    `bun:"magic_link_token,unique"`
-	MagicLinkExpiry    *time.Time `bun:"magic_link_expiry"`
+	MagicLinkExpiry    *time.Time `bun:"magic_link_expiry,type:timestamptz"`
 
 	base.AuditColumn
 
