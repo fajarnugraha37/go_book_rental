@@ -4,6 +4,7 @@ import (
 	"backend/pkg/helper"
 	"reflect"
 
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -13,8 +14,10 @@ const (
 )
 
 type AuditFilter struct {
-	ID  *string   `comparator:"eq" field:"id"`
-	IDs *[]string `comparator:"in" field:"id"`
+	UUID  *uuid.UUID   `comparator:"eq" field:"id"`
+	ID    *string      `comparator:"eq" field:"id"`
+	IDs   *[]string    `comparator:"in" field:"id"`
+	UUIDs *[]uuid.UUID `comparator:"in" field:"id"`
 
 	CreatedBy       *string `comparator:"like" field:"created_by"`
 	CreatedAt       *string `comparator:"eq" field:"created_at"`
@@ -26,15 +29,16 @@ type AuditFilter struct {
 	UpdatedAtBefore *string `comparator:"le" field:"updated_at"`
 	UpdatedAtAfter  *string `comparator:"ge" field:"updated_at"`
 
-	DeletedFlag     *bool   `comparator:"eq" field:"deleted_flag"`
-	DeletedBy       *string `comparator:"like" field:"deleted_by"`
-	DeletedAt       *string `comparator:"eq" field:"deleted_at"`
-	DeletedAtBefore *string `comparator:"le" field:"deleted_at"`
-	DeletedAtAfter  *string `comparator:"ge" field:"deleted_at"`
+	DeletedFlag     *bool    `comparator:"eq" field:"deleted_flag"`
+	DeletedBy       *string  `comparator:"like" field:"deleted_by"`
+	DeletedAt       *string  `comparator:"eq" field:"deleted_at"`
+	DeletedAtBefore *string  `comparator:"le" field:"deleted_at"`
+	DeletedAtAfter  *string  `comparator:"ge" field:"deleted_at"`
+	Relations       []string `comparator:"relations"`
 }
 
-func filterToQueryBuilder[TFilter any](filter TFilter) func(q bun.QueryBuilder) bun.QueryBuilder {
-	return func(q bun.QueryBuilder) bun.QueryBuilder {
+func filterToQueryBuilder[TFilter any](filter TFilter) func(q *bun.SelectQuery) *bun.SelectQuery {
+	return func(q *bun.SelectQuery) *bun.SelectQuery {
 		fields := helper.GetAllFields(
 			reflect.TypeOf(filter),
 			reflect.ValueOf(filter),
@@ -54,6 +58,12 @@ func filterToQueryBuilder[TFilter any](filter TFilter) func(q bun.QueryBuilder) 
 			}
 
 			switch tagValue {
+			case "relations":
+				{
+					for _, v := range field.Value.([]string) {
+						q.Relation(v)
+					}
+				}
 			case "eq":
 				{
 					q.Where(tagField+" = ? ", field.Value)

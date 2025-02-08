@@ -8,5 +8,6 @@ type UserRepo interface {
 
 type UserFilter struct {
 	AuditFilter
-	Username *string `comparator:"like" field:"username"`
+	Username  *string   `comparator:"eq" field:"username"`
+	Usernames *[]string `comparator:"in" field:"username"`
 }

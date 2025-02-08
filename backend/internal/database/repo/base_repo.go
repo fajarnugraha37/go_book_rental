@@ -33,13 +33,13 @@ func newBaseRepo[TFilter, TResult any](db *bun.DB) *baseRepoImpl[TFilter, TResul
 func (b *baseRepoImpl[TFilter, TResult]) FindOne(ctx context.Context, filter TFilter, sortable *Sortable) (*TResult, error) {
 	result := new(TResult)
 	q := b.db.NewSelect().
-		Model(result).
-		Limit(1)
+		Model(result)
 	if sortable != nil {
 		q = sortable.Append(q)
 	}
 
-	err := q.ApplyQueryBuilder(filterToQueryBuilder(filter)).
+	err := q.Apply(filterToQueryBuilder(filter)).
+		Limit(1).
 		Scan(ctx)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (b *baseRepoImpl[TFilter, TResult]) FindAll(ctx context.Context, filter TFi
 		q = sortable.Append(q)
 	}
 
-	err := q.ApplyQueryBuilder(filterToQueryBuilder(filter)).
+	err := q.Apply(filterToQueryBuilder(filter)).
 		Scan(ctx)
 	if err != nil {
 		return nil, err
