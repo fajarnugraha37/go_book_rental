@@ -20,6 +20,7 @@ type DatabaseConfig struct {
 	User     string
 	Password string
 	Name     string
+	SslMode  string
 }
 
 type ObjectStorageConfig struct {
