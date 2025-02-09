@@ -6,6 +6,7 @@ type Config struct {
 	Cache         CacheConfig         `mapstructure:"cache"`
 	ObjectStorage ObjectStorageConfig `mapstructure:"object_storage"`
 	MessageBroker MessageBrokerConfig `mapstructure:"message_broker"`
+	Jwt           JwtConfig           `mapstructure:"jwt"`
 }
 
 type AppConfig struct {
@@ -44,4 +45,11 @@ type CacheConfig struct {
 	Port     int
 	Username string
 	Password string
+}
+
+type JwtConfig struct {
+	ExpirationInSecond int64
+	Issuer             string
+	SigningMethod      string
+	SignatureKey       string
 }
