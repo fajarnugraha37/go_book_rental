@@ -1,6 +1,7 @@
 package basev2
 
 import (
+	"backend/internal/database"
 	"backend/internal/database/repo/filter"
 	"context"
 
@@ -13,8 +14,8 @@ type RepoDQLImpl[TModel any] struct {
 
 // FindOne implements RepoDQL.
 func (r *RepoDQLImpl[TModel]) FindOne(ctx context.Context, predicate *filter.Predicate) (*TModel, error) {
-	result := new(TModel)
-	err := r.db.NewSelect().
+	result, query := database.UowSelect[TModel](ctx, r.db)
+	err := query.
 		Model(result).
 		Apply(predicate.ToQuery()...).
 		Limit(1).
@@ -28,10 +29,7 @@ func (r *RepoDQLImpl[TModel]) FindOne(ctx context.Context, predicate *filter.Pre
 
 // FindMany implements RepoDQL.
 func (r *RepoDQLImpl[TModel]) FindMany(ctx context.Context, predicate *filter.Predicate) ([]TModel, error) {
-	var result []TModel
-	query := r.db.NewSelect().
-		Model(&result)
-
+	result, query := database.UowSelect[[]TModel](ctx, r.db)
 	if predicate.Pageable != nil {
 		query = predicate.Pageable.Append(query)
 	}
@@ -43,10 +41,10 @@ func (r *RepoDQLImpl[TModel]) FindMany(ctx context.Context, predicate *filter.Pr
 		Apply(predicate.ToQuery()...).
 		Scan(ctx)
 	if err != nil {
-		return result, err
+		return []TModel{}, err
 	}
 
-	return result, nil
+	return *result, nil
 }
 
 // FindMany implements RepoDQL.
@@ -65,9 +63,8 @@ func (r *RepoDQLImpl[TModel]) FindPageable(ctx context.Context, predicate *filte
 
 // Count implements RepoDQL.
 func (r *RepoDQLImpl[TModel]) Count(ctx context.Context, predicate *filter.Predicate) (int, error) {
-	model := new(TModel)
-	count, err := r.db.NewSelect().
-		Model(model).
+	_, query := database.UowSelect[[]TModel](ctx, r.db)
+	count, err := query.
 		Apply(predicate.ToQuery()...).
 		Count(ctx)
 	if err != nil {

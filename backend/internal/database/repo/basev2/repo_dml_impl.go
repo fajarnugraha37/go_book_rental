@@ -1,6 +1,7 @@
 package basev2
 
 import (
+	"backend/internal/database"
 	"context"
 
 	"github.com/uptrace/bun"
@@ -12,8 +13,8 @@ type RepoDMLImpl[TModel any] struct {
 
 // Insert implements RepoDML.
 func (r *RepoDMLImpl[TModel]) Insert(ctx context.Context, model *TModel) error {
-	_, err := r.db.NewInsert().
-		Model(model).
+	query := database.UowInsert(ctx, r.db, model)
+	_, err := query.
 		Returning("*").
 		Exec(ctx)
 
@@ -21,9 +22,9 @@ func (r *RepoDMLImpl[TModel]) Insert(ctx context.Context, model *TModel) error {
 }
 
 // InsertBulk implements RepoDML.
-func (r *RepoDMLImpl[TModel]) InsertBulk(ctx context.Context, model *[]TModel) error {
-	_, err := r.db.NewInsert().
-		Model(model).
+func (r *RepoDMLImpl[TModel]) InsertBulk(ctx context.Context, models *[]TModel) error {
+	query := database.UowInsert(ctx, r.db, models)
+	_, err := query.
 		Returning("*").
 		Exec(ctx)
 
@@ -32,8 +33,8 @@ func (r *RepoDMLImpl[TModel]) InsertBulk(ctx context.Context, model *[]TModel) e
 
 // Update implements RepoDML.
 func (r *RepoDMLImpl[TModel]) Update(ctx context.Context, model *TModel) error {
-	_, err := r.db.NewUpdate().
-		Model(model).
+	query := database.UowUpdate(ctx, r.db, model)
+	_, err := query.
 		WherePK().
 		Returning("*").
 		Exec(ctx)
@@ -42,9 +43,9 @@ func (r *RepoDMLImpl[TModel]) Update(ctx context.Context, model *TModel) error {
 }
 
 // UpdateBulk implements RepoDML.
-func (r *RepoDMLImpl[TModel]) UpdateBulk(ctx context.Context, model *[]TModel) error {
-	_, err := r.db.NewUpdate().
-		Model(model).
+func (r *RepoDMLImpl[TModel]) UpdateBulk(ctx context.Context, models *[]TModel) error {
+	query := database.UowUpdate(ctx, r.db, models)
+	_, err := query.
 		WherePK().
 		Returning("*").
 		Exec(ctx)
@@ -54,9 +55,9 @@ func (r *RepoDMLImpl[TModel]) UpdateBulk(ctx context.Context, model *[]TModel) e
 
 // Delete implements RepoDML.
 func (r *RepoDMLImpl[TModel]) Delete(ctx context.Context, id string) (*TModel, error) {
-	result := new(TModel)
-	_, err := r.db.NewUpdate().
-		Model(result).
+	model := new(TModel)
+	query := database.UowUpdate(ctx, r.db, model)
+	_, err := query.
 		Set("deleted_flag = true").
 		Set("deleted_at = current_timestamp").
 		Set("deleted_by = 'system'").
@@ -67,14 +68,14 @@ func (r *RepoDMLImpl[TModel]) Delete(ctx context.Context, id string) (*TModel, e
 		return nil, err
 	}
 
-	return result, nil
+	return model, nil
 }
 
 // Restore implements RepoDML.
 func (r *RepoDMLImpl[TModel]) Restore(ctx context.Context, id string) (*TModel, error) {
-	result := new(TModel)
-	_, err := r.db.NewUpdate().
-		Model(result).
+	model := new(TModel)
+	query := database.UowUpdate(ctx, r.db, model)
+	_, err := query.
 		Set("deleted_flag = false").
 		Set("updated_at = current_timestamp").
 		Set("updated_by = 'system'").
@@ -85,5 +86,5 @@ func (r *RepoDMLImpl[TModel]) Restore(ctx context.Context, id string) (*TModel, 
 		return nil, err
 	}
 
-	return result, nil
+	return model, nil
 }
