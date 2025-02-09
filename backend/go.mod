@@ -45,7 +45,6 @@ require (
 require (
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/pquerna/otp v1.4.0
 	github.com/spf13/viper v1.19.0
