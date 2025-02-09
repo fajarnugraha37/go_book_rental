@@ -2,6 +2,7 @@ package database
 
 import (
 	"backend/internal/config"
+	"backend/internal/database/model"
 	"database/sql"
 	"fmt"
 	"time"
@@ -36,6 +37,7 @@ func connect(cfg *config.Config) {
 		sqldb,
 		pgdialect.New(),
 	)
+	bundb.RegisterModel((*model.UserToRole)(nil))
 	bundb.AddQueryHook(&QueryHook{})
 	if err := bundb.Ping(); err != nil {
 		panic(err)

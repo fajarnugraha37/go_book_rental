@@ -32,6 +32,7 @@ type User struct {
 	base.AuditColumn
 
 	UserAttributes []*UserAttribute `bun:"rel:has-many,join:id=user_id"`
+	Roles          []*Role          `bun:"m2m:user_to_role,join:User=Role"`
 }
 
 func (m *User) BeforeAppendModel(ctx context.Context, query bun.Query) error {

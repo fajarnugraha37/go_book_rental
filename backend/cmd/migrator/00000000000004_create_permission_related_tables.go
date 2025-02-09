@@ -9,22 +9,14 @@ import (
 )
 
 func init() {
-	cols := []string{"is_active", "created_at", "updated_at", "deleted_flag"}
+	cols := []string{"created_at", "updated_at", "deleted_flag"}
 	migrations.Add(migrate.Migration{
-		Name:    "00000000000002_create_users_table",
+		Name:    "00000000000004_create_permission_related_tables",
 		Comment: "user table creations",
 		Up: func(ctx context.Context, db *bun.DB) error {
-			// User To Role
+			// Role
 			_, err := db.NewCreateTable().
-				Model((*model.UserToRole)(nil)).
-				IfNotExists().
-				Exec(ctx)
-			if err != nil {
-				return err
-			}
-
-			_, err = db.NewCreateTable().
-				Model((*model.User)(nil)).
+				Model((*model.Role)(nil)).
 				IfNotExists().
 				Exec(ctx)
 			if err != nil {
@@ -33,9 +25,9 @@ func init() {
 
 			for _, col := range cols {
 				_, err := db.NewCreateIndex().
-					Model((*model.User)(nil)).
+					Model((*model.Role)(nil)).
 					IfNotExists().
-					Index(col + "__users_idx").
+					Index(col + "__role_idx").
 					Column(col).
 					Exec(ctx)
 				if err != nil {
@@ -43,18 +35,30 @@ func init() {
 				}
 			}
 
+			// Permission
+			_, err = db.NewCreateTable().
+				Model((*model.Permission)(nil)).
+				IfNotExists().
+				Exec(ctx)
+			if err != nil {
+				return err
+			}
+
 			return nil
 		},
 		Down: func(ctx context.Context, db *bun.DB) error {
 			_, err := db.NewDropTable().
-				Model((*model.User)(nil)).
+				Model((*model.Permission)(nil)).
 				IfExists().
 				Cascade().
 				Restrict().
 				Exec(ctx)
+			if err != nil {
+				return err
+			}
 
 			_, err = db.NewDropTable().
-				Model((*model.UserToRole)(nil)).
+				Model((*model.Role)(nil)).
 				IfExists().
 				Cascade().
 				Restrict().
@@ -67,8 +71,3 @@ func init() {
 		},
 	})
 }
-
-// WithForeignKeys().
-// ForeignKey(`(fkey) REFERENCES table1 (pkey) ON DELETE CASCADE`).
-// PartitionBy("HASH (id)").
-// TableSpace("fasttablespace").
