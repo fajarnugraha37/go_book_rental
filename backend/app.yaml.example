@@ -6,9 +6,9 @@ app:
 database:
   host: localhost
   port: 5432
-  user: postgres
-  password: postgres
-  name: rental
+  user: developer
+  password: test1234
+  name: book_rental
   ssl_mode: disable
 
 cache:
@@ -25,6 +25,12 @@ object_storage:
   secret_key: minioadmin
   host: minio
   region: ap-southeast-1
+
+jwt:
+  expiration_in_second: 3600
+  issuer: example
+  signing_method: SigningMethodHS256
+  signature_key: the secret of baleendah
 
 message_broker:
   type: kafka
