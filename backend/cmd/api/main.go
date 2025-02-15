@@ -18,18 +18,7 @@ func main() {
 		log = logger.GetSugaredLogger()
 	)
 	defer log.Sync()
-
-	srv.All("/", func(c *fiber.Ctx) error {
-		var res any
-		return c.JSON(map[string]any{
-			"message": "Hello, World!",
-			"result":  res,
-		})
-	})
-
-	srv.All("/api", func(c *fiber.Ctx) error {
-		return c.SendString("API Hello, World!")
-	})
+	srv.RegisterFiberRoutes()
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)

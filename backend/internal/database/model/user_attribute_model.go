@@ -20,9 +20,9 @@ type UserAttribute struct {
 	Key    string    `bun:"key,unique:user_attribute_key_per_user,notnull"`
 	Type   string    `bun:"type,notnull"`
 	Value  string    `bun:"value,notnull"`
+	User   User      `bun:"rel:belongs-to,join:user_id=id"`
 
 	base.AuditColumn
-	User *User `bun:"rel:belongs-to,join:user_id=id"`
 }
 
 func (m *UserAttribute) BeforeAppendModel(ctx context.Context, query bun.Query) error {

@@ -8,13 +8,14 @@ import (
 )
 
 type Permission struct {
-	bun.BaseModel `bun:"table:roles,alias:roles"`
-	ID            uuid.UUID         `bun:"id,pk"`
-	RoleID        string            `bun:"role_id"`
-	Resource      string            `bun:"resource,notnull"`
-	Privilege     map[string]string `bun:"privilege,notnull,type:jsonb,default:'{}'"`
-	Expression    *string           `bun:"Expression"`
-	base.AuditColumn
+	bun.BaseModel `bun:"table:premissions,alias:premissions"`
 
-	Role *Role `bun:"rel:belongs-to,join:role_id=id"`
+	ID         uuid.UUID         `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
+	RoleID     string            `bun:"role_id"`
+	Resource   string            `bun:"resource,notnull"`
+	Privilege  map[string]string `bun:"privilege,notnull,type:jsonb,default:'{}'"`
+	Expression *string           `bun:"Expression"`
+	Role       Role              `bun:"rel:belongs-to,join:role_id=id"`
+
+	base.AuditColumn
 }

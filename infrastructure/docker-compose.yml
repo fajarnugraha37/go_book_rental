@@ -25,18 +25,24 @@ services:
       - backend
 
   postgres:
-    image: postgres:15-alpine
+    image: ${PG_IMAGE}
     environment:
-      POSTGRES_USER: developer
-      POSTGRES_PASSWORD: test1234
-      POSTGRES_DB: book_rental
+      POSTGRES_USER: ${PG_USERNAME}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE}
     ports:
       - "5432:5432"
     volumes:
       - database_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${PG_USERNAME} -d ${PG_DATABASE}'"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   redis:
-    image: redis:7.2.7-alpine
+    image: ${REDIS_IMAGE}
     ports:
       - 6379:6379
 
