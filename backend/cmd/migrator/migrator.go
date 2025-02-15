@@ -19,7 +19,7 @@ func execute() {
 
 	var (
 		cfg      = config.LoadConfig()
-		db       = database.GetBunDB(cfg)
+		db       = database.SingletonConnection(cfg).GetBun()
 		migrator = migrate.NewMigrator(db, migrations)
 		ctx      = context.Background()
 	)
