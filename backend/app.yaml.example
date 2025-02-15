@@ -4,11 +4,11 @@ app:
   port: 8080
 
 database:
-  host: localhost
+  host: postgres
   port: 5432
   user: developer
   password: test1234
-  name: book_rental
+  name: app
   ssl_mode: disable
 
 cache:
