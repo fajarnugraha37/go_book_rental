@@ -47,36 +47,36 @@ services:
       - 6379:6379
 
   maildev:
-    image: maildev/maildev:2.2.1
+    image: ${MAIL_IMAGE}
     environment:
-      - MAILDEV_WEB_USER=developer@example.com
-      - MAILDEV_WEB_PASS=test1234
+      - MAILDEV_WEB_USER=${MAIL_USERNAME}
+      - MAILDEV_WEB_PASS=${MAIL_PASSWORD}
       - MAILDEV_SMTP_PORT=1025
       - MAILDEV_WEB_PORT=1080
-      - MAILDEV_OUTGOING_USER=developer@example.com
-      - MAILDEV_OUTGOING_PASS=test1234
-      - MAILDEV_INCOMING_USER=developer@example.com
-      - MAILDEV_INCOMING_PASS=test1234
+      - MAILDEV_OUTGOING_USER=${MAIL_USERNAME}
+      - MAILDEV_OUTGOING_PASS=${MAIL_PASSWORD}
+      - MAILDEV_INCOMING_USER=${MAIL_USERNAME}
+      - MAILDEV_INCOMING_PASS=${MAIL_PASSWORD}
     ports:
       - "1025:1025" # SMTP port
       - "1080:1080" # Web UI port
       
   minio:
-    image: minio/minio:RELEASE.2025-01-18T00-31-37Z
+    image: ${MINIO_IMAGE}
     ports:
       - "9000:9000"
       - "9001:9001" # Minio Console Port
     environment:
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
-      MINIO_ROOT_USER: developer
-      MINIO_ROOT_PASSWORD: test1234 
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD} 
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
 
   kafka:
-    image: confluentinc/cp-kafka:7.7.1
+    image: ${KAFKA_IMAGE}
     ports:
       - "9092:9092"
       - "9093:9093"
