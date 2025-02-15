@@ -7,17 +7,17 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type RoleRepoImpl struct {
+type roleRepoImpl struct {
 	db *bun.DB
-	*basev2.RepoDMLImpl[model.Role]
-	*basev2.RepoDQLImpl[model.Role]
+	basev2.RepoDML[model.Role]
+	basev2.RepoDQL[model.Role]
 }
 
 func NewRoleRepo(db *bun.DB) RoleRepo {
-	var _ RoleRepo = (*RoleRepoImpl)(nil)
-	return &RoleRepoImpl{
-		db:          db,
-		RepoDMLImpl: basev2.NewRepoDML[model.Role](db),
-		RepoDQLImpl: basev2.NewRepoDQL[model.Role](db),
+	var _ RoleRepo = (*roleRepoImpl)(nil)
+	return &roleRepoImpl{
+		db:      db,
+		RepoDML: basev2.NewRepoDML[model.Role](db),
+		RepoDQL: basev2.NewRepoDQL[model.Role](db),
 	}
 }

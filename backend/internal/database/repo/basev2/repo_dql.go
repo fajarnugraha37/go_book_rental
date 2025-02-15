@@ -14,10 +14,10 @@ type RepoDQL[TModel any] interface {
 	Count(ctx context.Context, predicate *filter.Predicate) (int, error)
 }
 
-var _ RepoDQL[any] = (*RepoDQLImpl[any])(nil)
+var _ RepoDQL[any] = (*repoDQLImpl[any])(nil)
 
-func NewRepoDQL[TModel any](db *bun.DB) *RepoDQLImpl[TModel] {
-	return &RepoDQLImpl[TModel]{
+func NewRepoDQL[TModel any](db *bun.DB) RepoDQL[TModel] {
+	return &repoDQLImpl[TModel]{
 		db: db,
 	}
 }

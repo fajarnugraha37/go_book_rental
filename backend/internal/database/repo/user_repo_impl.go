@@ -7,17 +7,17 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type UserRepoImpl struct {
+type userRepoImpl struct {
 	db *bun.DB
-	*basev2.RepoDMLImpl[model.User]
-	*basev2.RepoDQLImpl[model.User]
+	basev2.RepoDML[model.User]
+	basev2.RepoDQL[model.User]
 }
 
 func NewUserRepo(db *bun.DB) UserRepo {
-	var _ UserRepo = (*UserRepoImpl)(nil)
-	return &UserRepoImpl{
-		db:          db,
-		RepoDMLImpl: basev2.NewRepoDML[model.User](db),
-		RepoDQLImpl: basev2.NewRepoDQL[model.User](db),
+	var _ UserRepo = (*userRepoImpl)(nil)
+	return &userRepoImpl{
+		db:      db,
+		RepoDML: basev2.NewRepoDML[model.User](db),
+		RepoDQL: basev2.NewRepoDQL[model.User](db),
 	}
 }

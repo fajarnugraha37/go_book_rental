@@ -2,17 +2,18 @@ package basev2
 
 import (
 	"backend/internal/database"
+	"backend/pkg/helper"
 	"context"
 
 	"github.com/uptrace/bun"
 )
 
-type RepoDMLImpl[TModel any] struct {
+type repoDMLImpl[TModel any] struct {
 	db *bun.DB
 }
 
 // Insert implements RepoDML.
-func (r *RepoDMLImpl[TModel]) Insert(ctx context.Context, model *TModel) error {
+func (r *repoDMLImpl[TModel]) Insert(ctx context.Context, model *TModel) error {
 	query := database.UowInsert(ctx, r.db, model)
 	_, err := query.
 		Returning("*").
@@ -22,7 +23,7 @@ func (r *RepoDMLImpl[TModel]) Insert(ctx context.Context, model *TModel) error {
 }
 
 // InsertBulk implements RepoDML.
-func (r *RepoDMLImpl[TModel]) InsertBulk(ctx context.Context, models *[]TModel) error {
+func (r *repoDMLImpl[TModel]) InsertBulk(ctx context.Context, models *[]TModel) error {
 	query := database.UowInsert(ctx, r.db, models)
 	_, err := query.
 		Returning("*").
@@ -32,7 +33,7 @@ func (r *RepoDMLImpl[TModel]) InsertBulk(ctx context.Context, models *[]TModel) 
 }
 
 // Update implements RepoDML.
-func (r *RepoDMLImpl[TModel]) Update(ctx context.Context, model *TModel) error {
+func (r *repoDMLImpl[TModel]) Update(ctx context.Context, model *TModel) error {
 	query := database.UowUpdate(ctx, r.db, model)
 	_, err := query.
 		WherePK().
@@ -43,7 +44,7 @@ func (r *RepoDMLImpl[TModel]) Update(ctx context.Context, model *TModel) error {
 }
 
 // UpdateBulk implements RepoDML.
-func (r *RepoDMLImpl[TModel]) UpdateBulk(ctx context.Context, models *[]TModel) error {
+func (r *repoDMLImpl[TModel]) UpdateBulk(ctx context.Context, models *[]TModel) error {
 	query := database.UowUpdate(ctx, r.db, models)
 	_, err := query.
 		WherePK().
@@ -54,7 +55,7 @@ func (r *RepoDMLImpl[TModel]) UpdateBulk(ctx context.Context, models *[]TModel) 
 }
 
 // Delete implements RepoDML.
-func (r *RepoDMLImpl[TModel]) Delete(ctx context.Context, id string) (*TModel, error) {
+func (r *repoDMLImpl[TModel]) Delete(ctx context.Context, id string) (*TModel, error) {
 	model := new(TModel)
 	query := database.UowUpdate(ctx, r.db, model)
 	_, err := query.
@@ -64,15 +65,12 @@ func (r *RepoDMLImpl[TModel]) Delete(ctx context.Context, id string) (*TModel, e
 		Where("id = ?", id).
 		Returning("*").
 		Exec(ctx)
-	if err != nil {
-		return nil, err
-	}
 
-	return model, nil
+	return helper.ReturnTuple(model, err)
 }
 
 // Restore implements RepoDML.
-func (r *RepoDMLImpl[TModel]) Restore(ctx context.Context, id string) (*TModel, error) {
+func (r *repoDMLImpl[TModel]) Restore(ctx context.Context, id string) (*TModel, error) {
 	model := new(TModel)
 	query := database.UowUpdate(ctx, r.db, model)
 	_, err := query.
@@ -82,9 +80,6 @@ func (r *RepoDMLImpl[TModel]) Restore(ctx context.Context, id string) (*TModel, 
 		Where("id = ?", id).
 		Returning("*").
 		Exec(ctx)
-	if err != nil {
-		return nil, err
-	}
 
-	return model, nil
+	return helper.ReturnTuple(model, err)
 }

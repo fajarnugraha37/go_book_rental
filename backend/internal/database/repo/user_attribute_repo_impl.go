@@ -7,17 +7,17 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type UserAttributeRepoImpl struct {
+type userAttributeRepoImpl struct {
 	db *bun.DB
-	*basev2.RepoDMLImpl[model.UserAttribute]
-	*basev2.RepoDQLImpl[model.UserAttribute]
+	basev2.RepoDML[model.UserAttribute]
+	basev2.RepoDQL[model.UserAttribute]
 }
 
 func NewUserAttributeRepo(db *bun.DB) UserAttributeRepo {
-	var _ UserAttributeRepo = (*UserAttributeRepoImpl)(nil)
-	return &UserAttributeRepoImpl{
-		db:          db,
-		RepoDMLImpl: basev2.NewRepoDML[model.UserAttribute](db),
-		RepoDQLImpl: basev2.NewRepoDQL[model.UserAttribute](db),
+	var _ UserAttributeRepo = (*userAttributeRepoImpl)(nil)
+	return &userAttributeRepoImpl{
+		db:      db,
+		RepoDML: basev2.NewRepoDML[model.UserAttribute](db),
+		RepoDQL: basev2.NewRepoDQL[model.UserAttribute](db),
 	}
 }

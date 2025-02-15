@@ -19,10 +19,10 @@ type RepoDML[TModel any] interface {
 	// HardDelete(ctx context.Context, model *TResult) error
 }
 
-var _ RepoDML[any] = (*RepoDMLImpl[any])(nil)
+var _ RepoDML[any] = (*repoDMLImpl[any])(nil)
 
-func NewRepoDML[TModel any](db *bun.DB) *RepoDMLImpl[TModel] {
-	return &RepoDMLImpl[TModel]{
+func NewRepoDML[TModel any](db *bun.DB) RepoDML[TModel] {
+	return &repoDMLImpl[TModel]{
 		db: db,
 	}
 }
